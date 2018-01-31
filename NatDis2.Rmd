@@ -1,0 +1,40 @@
+---
+title: "Natural Disasters and Fatalities"
+author: "Jorge Sauma"
+date: "January 31, 2018"
+output:
+  slidy_presentation:
+      css: styles.css
+  ioslides_presentation: default
+---
+
+## Number of Fatalities per State
+**For the most deadly events**
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(plotly)
+set.seed(1024)
+
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", "stormdata.csv.bz2")
+raw_data<-read.csv("stormdata.csv.bz2", header=TRUE, stringsAsFactors = TRUE)
+
+ev_data<-raw_data[,c("STATE", "EVTYPE", "FATALITIES")]
+
+ev_data<-subset(ev_data, EVTYPE=="TORNADO" | EVTYPE=="FLASH FLOOD" | EVTYPE=="HEAT" | EVTYPE=="EXCESSIVE HEAT" | EVTYPE=="LIGHTNING")
+
+ev_data<-droplevels(ev_data)
+
+ev_state<-aggregate(FATALITIES ~ EVTYPE + STATE, ev_data, sum)
+
+gg <- ggplot(ev_state, aes(EVTYPE, FATALITIES)) +
+  geom_point(aes(size = FATALITIES, frame = STATE), color= "red") +
+  theme(plot.background = element_rect(fill = 'light blue')) +
+  theme(panel.background = element_rect(fill = 'light gray', colour = 'red')) +
+  theme(panel.grid = element_line(colour = 'gray'))
+
+ggplotly(gg)
+```
+
+###*Select the state to show the data for such state.*
+
